@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+ 
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Studio Project | Лендинг</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">VS<span>Master</span></div>
+            <ul>
+                <li><a href="#features">Функции</a></li>
+                <li><a href="#code">Примеры</a></li>
+                <li><a href="#download" class="btn-nav">Скачать</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Разработка нового уровня в Visual Studio</h1>
+        <p>Инструменты и расширения для тех, кто ценит скорость и чистоту кода.</p>
+        <div class="hero-btns">
+            <a href="#" class="btn-primary">Начать работу</a>
+            <a href="#" class="btn-secondary">Документация</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="card">
+            <h3>Интеллект</h3>
+            <p>Глубокая интеграция с IntelliSense для быстрого написания кода.</p>
+        </div>
+        <div class="card">
+            <h3>Отладка</h3>
+            <p>Мощные инструменты для поиска и исправления ошибок в реальном времени.</p>
+        </div>
+        <div class="card">
+            <h3>Кастомизация</h3>
+            <p>Полная поддержка тем и VSIX расширений.</p>
+        </div>
+    </section>
+
+    <section id="posts" class="posts">
+        <h2>Посты сообщества</h2>
+        <form id="postForm">
+            <label for="postAuthor">Ваше имя</label><br>
+            <input id="postAuthor" type="text" placeholder="Например: Лена" required><br><br>
+
+            <label for="postText">Текст поста</label><br>
+            <textarea id="postText" rows="4" placeholder="Напишите ваш пост..." required></textarea><br><br>
+
+            <button type="submit">Опубликовать пост</button>
+        </form>
+
+        <div id="postsList"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Visual Studio Fan Project. Создано для разработчиков.</p>
+    </footer>
+
+    <script>
+        const postForm = document.getElementById("postForm");
+        const postAuthor = document.getElementById("postAuthor");
+        const postText = document.getElementById("postText");
+        const postsList = document.getElementById("postsList");
+
+        const STORAGE_KEY = "community_posts";
+        let posts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        function savePosts() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+        }
+
+        function renderPosts() {
+            postsList.innerHTML = "";
+
+            if (posts.length === 0) {
+                postsList.innerHTML = "<p>Пока постов нет. Напишите первый!</p>";
+                return;
+            }
+
+            posts.forEach((post, index) => {
+                const postItem = document.createElement("article");
+                postItem.className = "post-item";
+                postItem.innerHTML = `
+                    <h3>${post.author}</h3>
+                    <p>${post.text}</p>
+                    <small>${post.date}</small><br>
+                    <button data-index="${index}" class="delete-post">Удалить</button>
+                    <hr>
+                `;
+                postsList.appendChild(postItem);
+            });
+        }
+
+        postForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const author = postAuthor.value.trim();
+            const text = postText.value.trim();
+
+            if (!author || !text) return;
+
+            const newPost = {
+                author,
+                text,
+                date: new Date().toLocaleString("ru-RU")
+            };
+
+            posts.unshift(newPost);
+            savePosts();
+            renderPosts();
+            postForm.reset();
+        });
+
+        postsList.addEventListener("click", (event) => {
+            if (!event.target.classList.contains("delete-post")) return;
+
+            const index = Number(event.target.dataset.index);
+            posts.splice(index, 1);
+            savePosts();
+            renderPosts();
+        });
+
+        renderPosts();
+    </script>
+</body>
+</html>
+
+
+ 
+
+
