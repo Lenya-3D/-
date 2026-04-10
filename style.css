@@ -6,6 +6,8 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: #f4f6fb;
+    background-image: linear-gradient(135deg, #f4f6fb, #dbeafe);
+    background-attachment: fixed;
     color: #1f2937;
     line-height: 1.5;
 }
@@ -49,6 +51,7 @@ nav a {
 
 .hero,
 .features,
+.desktop,
 .profiles,
 .posts {
     max-width: 1100px;
@@ -102,6 +105,31 @@ nav a {
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 16px;
+}
+
+.desktop-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.desktop-thumb {
+    width: 92px;
+    height: 58px;
+    border-radius: 10px;
+    border: 2px solid #cbd5e1;
+    background: #e5e7eb;
+}
+
+.desktop-thumb[data-bg*="#f4f6fb"] { background: linear-gradient(135deg, #f4f6fb, #dbeafe); }
+.desktop-thumb[data-bg*="#fef3c7"] { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+.desktop-thumb[data-bg*="#dcfce7"] { background: linear-gradient(135deg, #dcfce7, #bbf7d0); }
+.desktop-thumb[data-bg*="#e9d5ff"] { background: linear-gradient(135deg, #e9d5ff, #c4b5fd); }
+.desktop-thumb[data-bg*="#111827"] { background: linear-gradient(135deg, #111827, #1f2937); }
+
+.desktop-thumb.active {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 form input,

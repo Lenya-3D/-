@@ -11,6 +11,7 @@ const profileBio = document.getElementById("profileBio");
 const profileAvatar = document.getElementById("profileAvatar");
 const activeProfile = document.getElementById("activeProfile");
 const profilesList = document.getElementById("profilesList");
+const desktopGallery = document.getElementById("desktopGallery");
 const REACTIONS = [
     { key: "heart", emoji: "❤️" },
     { key: "laugh", emoji: "😂" },
@@ -22,9 +23,11 @@ const REACTIONS = [
 const STORAGE_KEY = "community_posts";
 const PROFILES_STORAGE_KEY = "community_profiles";
 const ACTIVE_PROFILE_STORAGE_KEY = "community_active_profile";
+const DESKTOP_BG_STORAGE_KEY = "community_desktop_background";
 let posts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let profiles = JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY)) || [];
 let currentProfileId = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY) || "";
+let currentDesktopBackground = localStorage.getItem(DESKTOP_BG_STORAGE_KEY) || "linear-gradient(135deg, #f4f6fb, #dbeafe)";
 
 function savePosts() {
     try {
@@ -154,6 +157,18 @@ function normalizePostLink(rawValue) {
     }
 }
 
+function applyDesktopBackground(backgroundValue) {
+    document.body.style.backgroundImage = backgroundValue;
+    currentDesktopBackground = backgroundValue;
+    localStorage.setItem(DESKTOP_BG_STORAGE_KEY, backgroundValue);
+    if (!desktopGallery) return;
+    const thumbs = desktopGallery.querySelectorAll(".desktop-thumb");
+    thumbs.forEach((thumb) => {
+        const isActive = thumb.dataset.bg === backgroundValue;
+        thumb.classList.toggle("active", isActive);
+    });
+}
+
 postForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -252,6 +267,15 @@ activeProfile.addEventListener("change", () => {
     postAuthor.value = currentProfile ? currentProfile.name : "";
 });
 
+if (desktopGallery) {
+    desktopGallery.addEventListener("click", (event) => {
+        if (!event.target.classList.contains("desktop-thumb")) return;
+        const backgroundValue = event.target.dataset.bg;
+        if (!backgroundValue) return;
+        applyDesktopBackground(backgroundValue);
+    });
+}
+
 postsList.addEventListener("click", (event) => {
     if (event.target.classList.contains("reaction-post")) {
         const index = Number(event.target.dataset.index);
@@ -301,6 +325,7 @@ if (currentProfileId && !getCurrentProfile()) {
     saveCurrentProfile();
 }
 savePosts();
+applyDesktopBackground(currentDesktopBackground);
 
 renderProfiles();
 renderPosts();
