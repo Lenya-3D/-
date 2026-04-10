@@ -1,0 +1,177 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6fb;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+header {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 16px 24px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.logo span {
+    color: #38bdf8;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 16px;
+}
+
+nav a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.hero,
+.features,
+.profiles,
+.posts {
+    max-width: 1100px;
+    margin: 24px auto;
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.hero h1 {
+    margin-top: 0;
+}
+
+.hero-btns {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-nav {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.btn-nav {
+    background: #38bdf8;
+    color: #0f172a;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+form input,
+form textarea,
+form select {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font: inherit;
+}
+
+button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.95;
+}
+
+#profilesList,
+#postsList {
+    margin-top: 18px;
+    display: grid;
+    gap: 12px;
+}
+
+.profile-item,
+.post-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px;
+    background: #fafcff;
+}
+
+.post-image {
+    max-width: 280px;
+    width: 100%;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.reaction-post {
+    margin: 6px 6px 6px 0;
+    background: #f59e0b;
+}
+
+.delete-post {
+    background: #dc2626;
+}
+
+footer {
+    text-align: center;
+    padding: 24px;
+    color: #6b7280;
+}
+
+@media (max-width: 700px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+    }
+}
