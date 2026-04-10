@@ -25,7 +25,11 @@ let profiles = JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY)) || [];
 let currentProfileId = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY) || "";
 
 function savePosts() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    } catch (error) {
+        alert("Не удалось сохранить посты: хранилище переполнено. Удалите старые посты с большими файлами.");
+    }
 }
 
 function saveProfiles() {
@@ -137,7 +141,7 @@ postForm.addEventListener("submit", async (event) => {
             alert("Можно загружать только видео.");
             return;
         }
-        video = await readImageAsDataUrl(videoFile);
+        video = URL.createObjectURL(videoFile);
     }
 
     const newPost = {
@@ -213,6 +217,9 @@ postsList.addEventListener("click", (event) => {
     if (!event.target.classList.contains("delete-post")) return;
 
     const index = Number(event.target.dataset.index);
+    if (posts[index] && typeof posts[index].video === "string" && posts[index].video.startsWith("blob:")) {
+        URL.revokeObjectURL(posts[index].video);
+    }
     posts.splice(index, 1);
     savePosts();
     renderPosts();
