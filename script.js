@@ -3,6 +3,7 @@ const postAuthor = document.getElementById("postAuthor");
 const postText = document.getElementById("postText");
 const postImage = document.getElementById("postImage");
 const postVideo = document.getElementById("postVideo");
+const postAudio = document.getElementById("postAudio");
 const postLink = document.getElementById("postLink");
 const postsList = document.getElementById("postsList");
 const profileForm = document.getElementById("profileForm");
@@ -15,6 +16,8 @@ const desktopGallery = document.getElementById("desktopGallery");
 const customDesktopImage = document.getElementById("customDesktopImage");
 const applyDesktopImage = document.getElementById("applyDesktopImage");
 const siteTabs = document.getElementById("siteTabs");
+const startAudioRecord = document.getElementById("startAudioRecord");
+const stopAudioRecord = document.getElementById("stopAudioRecord");
 const REACTIONS = [
     { key: "heart", emoji: "❤️" },
     { key: "laugh", emoji: "😂" },
@@ -33,6 +36,10 @@ let profiles = JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY)) || [];
 let currentProfileId = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY) || "";
 let currentDesktopBackground = loadDesktopBackground();
 let currentTab = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY) || "desktop";
+let recordedAudioDataUrl = "";
+let audioRecorder = null;
+let audioRecordChunks = [];
+let activeAudioStream = null;
 
 function savePosts() {
     try {
@@ -116,6 +123,9 @@ function renderPosts() {
         const postVideoHtml = post.video
             ? `<br><video src="${post.video}" class="post-video" controls preload="metadata"></video>`
             : "";
+        const postAudioHtml = post.audio
+            ? `<br><audio src="${post.audio}" class="post-audio" controls preload="metadata"></audio>`
+            : "";
         const postLinkHtml = post.link
             ? `<p><a href="${post.link}" class="post-link" target="_blank" rel="noopener noreferrer">${post.link}</a></p>`
             : "";
@@ -131,6 +141,7 @@ function renderPosts() {
             <p>${post.text}</p>
             ${postImageHtml}
             ${postVideoHtml}
+            ${postAudioHtml}
             ${postLinkHtml}
             <small>${post.date}</small><br>
             ${reactionsHtml}<br>
@@ -234,6 +245,7 @@ postForm.addEventListener("submit", async (event) => {
     const text = postText.value.trim();
     const imageFile = postImage.files[0];
     const videoFile = postVideo.files[0];
+    const audioFile = postAudio.files[0];
     const link = normalizePostLink(postLink.value);
 
     if (!author || !text) return;
@@ -260,12 +272,24 @@ postForm.addEventListener("submit", async (event) => {
         video = URL.createObjectURL(videoFile);
     }
 
+    let audio = "";
+    if (audioFile) {
+        if (!audioFile.type.startsWith("audio/")) {
+            alert("Можно загружать только аудио.");
+            return;
+        }
+        audio = await readImageAsDataUrl(audioFile);
+    } else if (recordedAudioDataUrl) {
+        audio = recordedAudioDataUrl;
+    }
+
     const newPost = {
         author,
         authorProfileId: currentProfile ? currentProfile.id : "",
         text,
         image,
         video,
+        audio,
         link,
         date: new Date().toLocaleString("ru-RU"),
         reactions: {
@@ -281,6 +305,7 @@ postForm.addEventListener("submit", async (event) => {
     savePosts();
     renderPosts();
     postForm.reset();
+    recordedAudioDataUrl = "";
     if (currentProfile) postAuthor.value = currentProfile.name;
 });
 
@@ -386,6 +411,53 @@ if (siteTabs) {
         const tabId = event.target.dataset.tabTarget;
         if (!tabId) return;
         showTab(tabId);
+    });
+}
+
+if (startAudioRecord && stopAudioRecord) {
+    startAudioRecord.addEventListener("click", async () => {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Запись аудио не поддерживается в этом браузере.");
+            return;
+        }
+        try {
+            activeAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioRecorder = new MediaRecorder(activeAudioStream);
+            audioRecordChunks = [];
+            recordedAudioDataUrl = "";
+
+            audioRecorder.ondataavailable = (event) => {
+                if (event.data && event.data.size > 0) {
+                    audioRecordChunks.push(event.data);
+                }
+            };
+
+            audioRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioRecordChunks, { type: "audio/webm" });
+                if (audioBlob.size > 0) {
+                    const audioFile = new File([audioBlob], "recorded-audio.webm", { type: "audio/webm" });
+                    recordedAudioDataUrl = await readImageAsDataUrl(audioFile);
+                }
+                if (activeAudioStream) {
+                    activeAudioStream.getTracks().forEach((track) => track.stop());
+                    activeAudioStream = null;
+                }
+                startAudioRecord.disabled = false;
+                stopAudioRecord.disabled = true;
+                alert("Запись аудио готова. Теперь можно публиковать пост.");
+            };
+
+            audioRecorder.start();
+            startAudioRecord.disabled = true;
+            stopAudioRecord.disabled = false;
+        } catch (error) {
+            alert("Не удалось начать запись аудио. Проверьте доступ к микрофону.");
+        }
+    });
+
+    stopAudioRecord.addEventListener("click", () => {
+        if (!audioRecorder || audioRecorder.state !== "recording") return;
+        audioRecorder.stop();
     });
 }
 

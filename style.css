@@ -245,6 +245,19 @@ button:hover {
     background: #000000;
 }
 
+.post-audio {
+    width: 100%;
+    max-width: 360px;
+    margin: 8px 0;
+}
+
+.audio-record-controls {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .post-link {
     color: #2563eb;
     word-break: break-word;
