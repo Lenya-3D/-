@@ -12,6 +12,8 @@ const profileAvatar = document.getElementById("profileAvatar");
 const activeProfile = document.getElementById("activeProfile");
 const profilesList = document.getElementById("profilesList");
 const desktopGallery = document.getElementById("desktopGallery");
+const customDesktopImage = document.getElementById("customDesktopImage");
+const applyDesktopImage = document.getElementById("applyDesktopImage");
 const REACTIONS = [
     { key: "heart", emoji: "❤️" },
     { key: "laugh", emoji: "😂" },
@@ -27,7 +29,7 @@ const DESKTOP_BG_STORAGE_KEY = "community_desktop_background";
 let posts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let profiles = JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY)) || [];
 let currentProfileId = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY) || "";
-let currentDesktopBackground = localStorage.getItem(DESKTOP_BG_STORAGE_KEY) || "linear-gradient(135deg, #f4f6fb, #dbeafe)";
+let currentDesktopBackground = loadDesktopBackground();
 
 function savePosts() {
     try {
@@ -158,14 +160,49 @@ function normalizePostLink(rawValue) {
     }
 }
 
-function applyDesktopBackground(backgroundValue) {
-    document.body.style.backgroundImage = backgroundValue;
-    currentDesktopBackground = backgroundValue;
-    localStorage.setItem(DESKTOP_BG_STORAGE_KEY, backgroundValue);
+function loadDesktopBackground() {
+    const defaultValue = { type: "preset", value: "linear-gradient(135deg, #f4f6fb, #dbeafe)" };
+    const storedValue = localStorage.getItem(DESKTOP_BG_STORAGE_KEY);
+    if (!storedValue) return defaultValue;
+    try {
+        const parsedValue = JSON.parse(storedValue);
+        if (parsedValue && typeof parsedValue.type === "string" && typeof parsedValue.value === "string") {
+            return parsedValue;
+        }
+        return defaultValue;
+    } catch (error) {
+        return { type: "preset", value: storedValue };
+    }
+}
+
+function saveDesktopBackground(backgroundConfig) {
+    try {
+        localStorage.setItem(DESKTOP_BG_STORAGE_KEY, JSON.stringify(backgroundConfig));
+        return true;
+    } catch (error) {
+        alert("Не удалось сохранить фон: картинка слишком большая.");
+        return false;
+    }
+}
+
+function applyDesktopBackground(backgroundConfig) {
+    if (backgroundConfig.type === "image") {
+        document.body.style.backgroundImage = `url("${backgroundConfig.value}")`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center center";
+        document.body.style.backgroundRepeat = "no-repeat";
+    } else {
+        document.body.style.backgroundImage = backgroundConfig.value;
+        document.body.style.backgroundSize = "auto";
+        document.body.style.backgroundPosition = "center center";
+        document.body.style.backgroundRepeat = "repeat";
+    }
+    currentDesktopBackground = backgroundConfig;
+    if (!saveDesktopBackground(backgroundConfig)) return;
     if (!desktopGallery) return;
     const thumbs = desktopGallery.querySelectorAll(".desktop-thumb");
     thumbs.forEach((thumb) => {
-        const isActive = thumb.dataset.bg === backgroundValue;
+        const isActive = backgroundConfig.type === "preset" && thumb.dataset.bg === backgroundConfig.value;
         thumb.classList.toggle("active", isActive);
     });
 }
@@ -304,7 +341,23 @@ if (desktopGallery) {
         if (!event.target.classList.contains("desktop-thumb")) return;
         const backgroundValue = event.target.dataset.bg;
         if (!backgroundValue) return;
-        applyDesktopBackground(backgroundValue);
+        applyDesktopBackground({ type: "preset", value: backgroundValue });
+    });
+}
+
+if (applyDesktopImage) {
+    applyDesktopImage.addEventListener("click", async () => {
+        const imageFile = customDesktopImage && customDesktopImage.files ? customDesktopImage.files[0] : null;
+        if (!imageFile) {
+            alert("Сначала выберите картинку для фона.");
+            return;
+        }
+        if (!imageFile.type.startsWith("image/")) {
+            alert("Для фона можно выбрать только изображение.");
+            return;
+        }
+        const imageDataUrl = await readImageAsDataUrl(imageFile);
+        applyDesktopBackground({ type: "image", value: imageDataUrl });
     });
 }
 

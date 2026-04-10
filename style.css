@@ -113,6 +113,14 @@ nav a {
     gap: 10px;
 }
 
+.desktop-custom {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
 .desktop-thumb {
     width: 92px;
     height: 58px;
