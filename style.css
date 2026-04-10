@@ -27,6 +27,23 @@ nav {
     margin: 0 auto;
 }
 
+.site-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.site-tab {
+    background: #334155;
+    color: #ffffff;
+    border: 1px solid #475569;
+}
+
+.site-tab.active {
+    background: #38bdf8;
+    color: #0f172a;
+}
+
 .logo {
     font-size: 24px;
     font-weight: 700;
@@ -60,6 +77,10 @@ nav a {
     background: #ffffff;
     border-radius: 14px;
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.tab-content.hidden {
+    display: none;
 }
 
 .hero h1 {

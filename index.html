@@ -11,10 +11,15 @@
     <header>
         <nav>
             <div class="logo">VS<span>Master</span></div>
+            <div id="siteTabs" class="site-tabs">
+                <button type="button" class="site-tab active" data-tab-target="desktop">Рабочий стол</button>
+                <button type="button" class="site-tab" data-tab-target="profiles">Профили</button>
+                <button type="button" class="site-tab" data-tab-target="posts">Посты</button>
+            </div>
         </nav>
     </header>
 
-    <section id="desktop" class="desktop">
+    <section id="desktop" class="desktop tab-content">
         <h2>Галерея рабочего стола</h2>
         <p>Выберите фон из галереи:</p>
         <div id="desktopGallery" class="desktop-gallery">
@@ -31,7 +36,7 @@
         </div>
     </section>
 
-    <section id="profiles" class="profiles">
+    <section id="profiles" class="profiles tab-content">
         <h2>Профили</h2>
         <form id="profileForm">
             <label for="profileName">Имя профиля</label><br>
@@ -54,7 +59,7 @@
         <div id="profilesList"></div>
     </section>
 
-    <section id="posts" class="posts">
+    <section id="posts" class="posts tab-content">
         <h2>Посты сообщества</h2>
         <form id="postForm">
             <label for="postAuthor">Ваше имя</label><br>

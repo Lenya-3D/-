@@ -14,6 +14,7 @@ const profilesList = document.getElementById("profilesList");
 const desktopGallery = document.getElementById("desktopGallery");
 const customDesktopImage = document.getElementById("customDesktopImage");
 const applyDesktopImage = document.getElementById("applyDesktopImage");
+const siteTabs = document.getElementById("siteTabs");
 const REACTIONS = [
     { key: "heart", emoji: "❤️" },
     { key: "laugh", emoji: "😂" },
@@ -26,10 +27,12 @@ const STORAGE_KEY = "community_posts";
 const PROFILES_STORAGE_KEY = "community_profiles";
 const ACTIVE_PROFILE_STORAGE_KEY = "community_active_profile";
 const DESKTOP_BG_STORAGE_KEY = "community_desktop_background";
+const ACTIVE_TAB_STORAGE_KEY = "community_active_tab";
 let posts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let profiles = JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY)) || [];
 let currentProfileId = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY) || "";
 let currentDesktopBackground = loadDesktopBackground();
+let currentTab = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY) || "desktop";
 
 function savePosts() {
     try {
@@ -207,6 +210,22 @@ function applyDesktopBackground(backgroundConfig) {
     });
 }
 
+function showTab(tabId) {
+    const allSections = document.querySelectorAll(".tab-content");
+    allSections.forEach((section) => {
+        section.classList.toggle("hidden", section.id !== tabId);
+    });
+    if (siteTabs) {
+        const tabs = siteTabs.querySelectorAll(".site-tab");
+        tabs.forEach((tabButton) => {
+            const isActive = tabButton.dataset.tabTarget === tabId;
+            tabButton.classList.toggle("active", isActive);
+        });
+    }
+    currentTab = tabId;
+    localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, tabId);
+}
+
 postForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -361,6 +380,15 @@ if (applyDesktopImage) {
     });
 }
 
+if (siteTabs) {
+    siteTabs.addEventListener("click", (event) => {
+        if (!event.target.classList.contains("site-tab")) return;
+        const tabId = event.target.dataset.tabTarget;
+        if (!tabId) return;
+        showTab(tabId);
+    });
+}
+
 postsList.addEventListener("click", (event) => {
     if (event.target.classList.contains("reaction-post")) {
         const index = Number(event.target.dataset.index);
@@ -411,6 +439,7 @@ if (currentProfileId && !getCurrentProfile()) {
 }
 savePosts();
 applyDesktopBackground(currentDesktopBackground);
+showTab(currentTab);
 
 renderProfiles();
 renderPosts();
