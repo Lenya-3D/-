@@ -78,6 +78,7 @@ function renderProfiles() {
             ${profileAvatarHtml}
             <h3>${profile.name}</h3>
             <p>${profile.bio || "Без описания"}</p>
+            <button type="button" class="delete-profile" data-profile-id="${profile.id}">Удалить профиль</button>
         `;
         profilesList.appendChild(profileCard);
     });
@@ -258,6 +259,37 @@ profileForm.addEventListener("submit", async (event) => {
     saveCurrentProfile();
     renderProfiles();
     profileForm.reset();
+});
+
+profilesList.addEventListener("click", (event) => {
+    if (!event.target.classList.contains("delete-profile")) return;
+    const profileId = event.target.dataset.profileId;
+    if (!profileId) return;
+    const profileToDelete = profiles.find((profile) => profile.id === profileId);
+    if (!profileToDelete) return;
+    const isConfirmed = window.confirm(`Удалить профиль "${profileToDelete.name}"?`);
+    if (!isConfirmed) return;
+
+    profiles = profiles.filter((profile) => profile.id !== profileId);
+    posts = posts.map((post) => {
+        if (post.authorProfileId !== profileId) return post;
+        return {
+            ...post,
+            author: "Удаленный профиль",
+            authorProfileId: ""
+        };
+    });
+
+    if (currentProfileId === profileId) {
+        currentProfileId = "";
+        postAuthor.value = "";
+        saveCurrentProfile();
+    }
+
+    saveProfiles();
+    savePosts();
+    renderProfiles();
+    renderPosts();
 });
 
 activeProfile.addEventListener("change", () => {

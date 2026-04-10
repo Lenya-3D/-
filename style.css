@@ -230,6 +230,10 @@ button:hover {
     background: #dc2626;
 }
 
+.delete-profile {
+    background: #b91c1c;
+}
+
 footer {
     text-align: center;
     padding: 24px;
