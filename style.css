@@ -150,6 +150,14 @@ button:hover {
     margin: 8px 0;
 }
 
+.post-video {
+    max-width: 360px;
+    width: 100%;
+    border-radius: 8px;
+    margin: 8px 0;
+    background: #000000;
+}
+
 .reaction-post {
     margin: 6px 6px 6px 0;
     background: #f59e0b;

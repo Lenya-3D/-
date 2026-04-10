@@ -2,6 +2,7 @@ const postForm = document.getElementById("postForm");
 const postAuthor = document.getElementById("postAuthor");
 const postText = document.getElementById("postText");
 const postImage = document.getElementById("postImage");
+const postVideo = document.getElementById("postVideo");
 const postsList = document.getElementById("postsList");
 const profileForm = document.getElementById("profileForm");
 const profileName = document.getElementById("profileName");
@@ -84,10 +85,14 @@ function renderPosts() {
         const postImageHtml = post.image
             ? `<br><img src="${post.image}" alt="Фото поста" class="post-image">`
             : "";
+        const postVideoHtml = post.video
+            ? `<br><video src="${post.video}" class="post-video" controls preload="metadata"></video>`
+            : "";
         postItem.innerHTML = `
             <h3>${post.author}</h3>
             <p>${post.text}</p>
             ${postImageHtml}
+            ${postVideoHtml}
             <small>${post.date}</small><br>
             ${reactionsHtml}<br>
             <button data-index="${index}" class="delete-post">Удалить</button>
@@ -113,6 +118,7 @@ postForm.addEventListener("submit", async (event) => {
     const author = currentProfile ? currentProfile.name : postAuthor.value.trim();
     const text = postText.value.trim();
     const imageFile = postImage.files[0];
+    const videoFile = postVideo.files[0];
 
     if (!author || !text) return;
 
@@ -125,10 +131,20 @@ postForm.addEventListener("submit", async (event) => {
         image = await readImageAsDataUrl(imageFile);
     }
 
+    let video = "";
+    if (videoFile) {
+        if (!videoFile.type.startsWith("video/")) {
+            alert("Можно загружать только видео.");
+            return;
+        }
+        video = await readImageAsDataUrl(videoFile);
+    }
+
     const newPost = {
         author,
         text,
         image,
+        video,
         date: new Date().toLocaleString("ru-RU"),
         reactions: {
             heart: 0,
