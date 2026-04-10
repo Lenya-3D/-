@@ -3,6 +3,7 @@ const postAuthor = document.getElementById("postAuthor");
 const postText = document.getElementById("postText");
 const postImage = document.getElementById("postImage");
 const postVideo = document.getElementById("postVideo");
+const postLink = document.getElementById("postLink");
 const postsList = document.getElementById("postsList");
 const profileForm = document.getElementById("profileForm");
 const profileName = document.getElementById("profileName");
@@ -106,6 +107,9 @@ function renderPosts() {
         const postVideoHtml = post.video
             ? `<br><video src="${post.video}" class="post-video" controls preload="metadata"></video>`
             : "";
+        const postLinkHtml = post.link
+            ? `<p><a href="${post.link}" class="post-link" target="_blank" rel="noopener noreferrer">${post.link}</a></p>`
+            : "";
         const postAvatar = getAvatarByPost(post);
         const postAvatarHtml = postAvatar
             ? `<img src="${postAvatar}" alt="Иконка автора ${post.author}" class="post-author-avatar">`
@@ -118,6 +122,7 @@ function renderPosts() {
             <p>${post.text}</p>
             ${postImageHtml}
             ${postVideoHtml}
+            ${postLinkHtml}
             <small>${post.date}</small><br>
             ${reactionsHtml}<br>
             <button data-index="${index}" class="delete-post">Удалить</button>
@@ -136,6 +141,19 @@ function readImageAsDataUrl(file) {
     });
 }
 
+function normalizePostLink(rawValue) {
+    const value = rawValue.trim();
+    if (!value) return "";
+    const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    try {
+        const parsed = new URL(withProtocol);
+        if (!["http:", "https:"].includes(parsed.protocol)) return null;
+        return parsed.href;
+    } catch (error) {
+        return null;
+    }
+}
+
 postForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -144,8 +162,13 @@ postForm.addEventListener("submit", async (event) => {
     const text = postText.value.trim();
     const imageFile = postImage.files[0];
     const videoFile = postVideo.files[0];
+    const link = normalizePostLink(postLink.value);
 
     if (!author || !text) return;
+    if (link === null) {
+        alert("Ссылка введена неверно. Пример: https://vk.com/your_group");
+        return;
+    }
 
     let image = "";
     if (imageFile) {
@@ -171,6 +194,7 @@ postForm.addEventListener("submit", async (event) => {
         text,
         image,
         video,
+        link,
         date: new Date().toLocaleString("ru-RU"),
         reactions: {
             heart: 0,

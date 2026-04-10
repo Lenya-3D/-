@@ -188,6 +188,11 @@ button:hover {
     background: #000000;
 }
 
+.post-link {
+    color: #2563eb;
+    word-break: break-word;
+}
+
 .reaction-post {
     margin: 6px 6px 6px 0;
     background: #f59e0b;
