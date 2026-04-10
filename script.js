@@ -21,6 +21,7 @@ const stopAudioRecord = document.getElementById("stopAudioRecord");
 const gameEntry = document.getElementById("gameEntry");
 const appContent = document.getElementById("appContent");
 const enterSiteButton = document.getElementById("enterSiteButton");
+const exitSiteButton = document.getElementById("exitSiteButton");
 const REACTIONS = [
     { key: "heart", emoji: "❤️" },
     { key: "laugh", emoji: "😂" },
@@ -431,11 +432,25 @@ if (enterSiteButton) {
     });
 }
 
+if (exitSiteButton) {
+    exitSiteButton.addEventListener("click", () => {
+        localStorage.setItem(SITE_ENTERED_STORAGE_KEY, "false");
+        setEntryState(false);
+    });
+}
+
 document.addEventListener("keydown", (event) => {
-    if (!gameEntry || gameEntry.classList.contains("game-entry-hidden")) return;
-    if (event.key !== "Enter") return;
-    localStorage.setItem(SITE_ENTERED_STORAGE_KEY, "true");
-    setEntryState(true);
+    if (event.key === "Enter") {
+        if (!gameEntry || gameEntry.classList.contains("game-entry-hidden")) return;
+        localStorage.setItem(SITE_ENTERED_STORAGE_KEY, "true");
+        setEntryState(true);
+        return;
+    }
+    if (event.key === "Escape") {
+        if (!appContent || appContent.classList.contains("game-entry-hidden")) return;
+        localStorage.setItem(SITE_ENTERED_STORAGE_KEY, "false");
+        setEntryState(false);
+    }
 });
 
 if (startAudioRecord && stopAudioRecord) {
