@@ -12,6 +12,34 @@ body {
     line-height: 1.5;
 }
 
+.game-entry-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.game-entry-card {
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.9);
+    color: #ffffff;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
+}
+
+.game-entry-card h1 {
+    margin-top: 0;
+}
+
+.game-entry-hidden {
+    display: none;
+}
+
 header {
     background: #0f172a;
     color: #ffffff;

@@ -18,6 +18,9 @@ const applyDesktopImage = document.getElementById("applyDesktopImage");
 const siteTabs = document.getElementById("siteTabs");
 const startAudioRecord = document.getElementById("startAudioRecord");
 const stopAudioRecord = document.getElementById("stopAudioRecord");
+const gameEntry = document.getElementById("gameEntry");
+const appContent = document.getElementById("appContent");
+const enterSiteButton = document.getElementById("enterSiteButton");
 const REACTIONS = [
     { key: "heart", emoji: "❤️" },
     { key: "laugh", emoji: "😂" },
@@ -31,6 +34,7 @@ const PROFILES_STORAGE_KEY = "community_profiles";
 const ACTIVE_PROFILE_STORAGE_KEY = "community_active_profile";
 const DESKTOP_BG_STORAGE_KEY = "community_desktop_background";
 const ACTIVE_TAB_STORAGE_KEY = "community_active_tab";
+const SITE_ENTERED_STORAGE_KEY = "community_site_entered";
 let posts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let profiles = JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY)) || [];
 let currentProfileId = localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY) || "";
@@ -237,6 +241,12 @@ function showTab(tabId) {
     localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, tabId);
 }
 
+function setEntryState(isEntered) {
+    if (!gameEntry || !appContent) return;
+    gameEntry.classList.toggle("game-entry-hidden", isEntered);
+    appContent.classList.toggle("game-entry-hidden", !isEntered);
+}
+
 postForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -414,6 +424,20 @@ if (siteTabs) {
     });
 }
 
+if (enterSiteButton) {
+    enterSiteButton.addEventListener("click", () => {
+        localStorage.setItem(SITE_ENTERED_STORAGE_KEY, "true");
+        setEntryState(true);
+    });
+}
+
+document.addEventListener("keydown", (event) => {
+    if (!gameEntry || gameEntry.classList.contains("game-entry-hidden")) return;
+    if (event.key !== "Enter") return;
+    localStorage.setItem(SITE_ENTERED_STORAGE_KEY, "true");
+    setEntryState(true);
+});
+
 if (startAudioRecord && stopAudioRecord) {
     startAudioRecord.addEventListener("click", async () => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -512,6 +536,7 @@ if (currentProfileId && !getCurrentProfile()) {
 savePosts();
 applyDesktopBackground(currentDesktopBackground);
 showTab(currentTab);
+setEntryState(localStorage.getItem(SITE_ENTERED_STORAGE_KEY) === "true");
 
 renderProfiles();
 renderPosts();
