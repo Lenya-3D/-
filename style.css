@@ -143,6 +143,36 @@ button:hover {
     background: #fafcff;
 }
 
+.profile-avatar,
+.post-author-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+}
+
+.profile-avatar {
+    margin-bottom: 8px;
+}
+
+.post-author-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.post-author-row h3 {
+    margin: 0;
+}
+
+.profile-avatar-placeholder,
+.post-author-avatar-placeholder {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+}
+
 .post-image {
     max-width: 280px;
     width: 100%;

@@ -7,6 +7,7 @@ const postsList = document.getElementById("postsList");
 const profileForm = document.getElementById("profileForm");
 const profileName = document.getElementById("profileName");
 const profileBio = document.getElementById("profileBio");
+const profileAvatar = document.getElementById("profileAvatar");
 const activeProfile = document.getElementById("activeProfile");
 const profilesList = document.getElementById("profilesList");
 const REACTIONS = [
@@ -44,6 +45,15 @@ function getCurrentProfile() {
     return profiles.find((profile) => profile.id === currentProfileId) || null;
 }
 
+function getAvatarByPost(post) {
+    if (post.authorProfileId) {
+        const authorProfile = profiles.find((profile) => profile.id === post.authorProfileId);
+        if (authorProfile && authorProfile.avatar) return authorProfile.avatar;
+    }
+    const byName = profiles.find((profile) => profile.name === post.author);
+    return byName && byName.avatar ? byName.avatar : "";
+}
+
 function renderProfiles() {
     activeProfile.innerHTML = '<option value="">Без профиля</option>';
     profilesList.innerHTML = "";
@@ -57,7 +67,11 @@ function renderProfiles() {
 
         const profileCard = document.createElement("article");
         profileCard.className = "profile-item";
+        const profileAvatarHtml = profile.avatar
+            ? `<img src="${profile.avatar}" alt="Иконка профиля ${profile.name}" class="profile-avatar">`
+            : `<div class="profile-avatar profile-avatar-placeholder" aria-hidden="true"></div>`;
         profileCard.innerHTML = `
+            ${profileAvatarHtml}
             <h3>${profile.name}</h3>
             <p>${profile.bio || "Без описания"}</p>
         `;
@@ -92,8 +106,15 @@ function renderPosts() {
         const postVideoHtml = post.video
             ? `<br><video src="${post.video}" class="post-video" controls preload="metadata"></video>`
             : "";
+        const postAvatar = getAvatarByPost(post);
+        const postAvatarHtml = postAvatar
+            ? `<img src="${postAvatar}" alt="Иконка автора ${post.author}" class="post-author-avatar">`
+            : `<div class="post-author-avatar post-author-avatar-placeholder" aria-hidden="true"></div>`;
         postItem.innerHTML = `
-            <h3>${post.author}</h3>
+            <div class="post-author-row">
+                ${postAvatarHtml}
+                <h3>${post.author}</h3>
+            </div>
             <p>${post.text}</p>
             ${postImageHtml}
             ${postVideoHtml}
@@ -146,6 +167,7 @@ postForm.addEventListener("submit", async (event) => {
 
     const newPost = {
         author,
+        authorProfileId: currentProfile ? currentProfile.id : "",
         text,
         image,
         video,
@@ -166,18 +188,29 @@ postForm.addEventListener("submit", async (event) => {
     if (currentProfile) postAuthor.value = currentProfile.name;
 });
 
-profileForm.addEventListener("submit", (event) => {
+profileForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const name = profileName.value.trim();
     const bio = profileBio.value.trim();
+    const avatarFile = profileAvatar.files[0];
 
     if (!name) return;
+
+    let avatar = "";
+    if (avatarFile) {
+        if (!avatarFile.type.startsWith("image/")) {
+            alert("Иконка профиля должна быть изображением.");
+            return;
+        }
+        avatar = await readImageAsDataUrl(avatarFile);
+    }
 
     const newProfile = {
         id: crypto.randomUUID(),
         name,
-        bio
+        bio,
+        avatar
     };
 
     profiles.push(newProfile);
